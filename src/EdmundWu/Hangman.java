@@ -1,25 +1,34 @@
 package EdmundWu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Hangman {
+class Hangman {
     private String message;
-    private int strikes; // max 6 dead
+    private int strikes;
     private List<String> misses;
-    public String output;
+    private String output;
 
-    public int getStrikes () {
+    Hangman(String word) {
+        this.strikes = 0;
+        this.message = word.toUpperCase();
+        this.misses = new ArrayList<>();
+        this.output = String.join("", Collections.nCopies(word.length(), "_"));
+    }
+
+    int getStrikes() {
         return this.strikes;
     }
 
-    public String getWord () {
+    String getWord() {
         return this.message;
     }
 
-    public String getOutput () { return this.output; }
+    String getOutput() {
+        return this.output;
+    }
 
     private void redraw (String currentGuess) {
         // Flush out stdout, or attempt to
@@ -37,31 +46,22 @@ public class Hangman {
                    |
             --------
          */
-        System.out.printf("________\n");
-        System.out.printf("   |   |\n");
-        System.out.printf("   %s   |  Word: %s\n", this.strikes > 0 ? 'o' : ' ', output);
+        System.out.printf("________\n   |   |\n   %s   |  Word: %s\n",
+                this.strikes > 0 ? 'o' : ' ',
+                output);
         System.out.printf("  %s%s%s  |  Guess: %s\n",
                 this.strikes > 2 ? '\\' : ' ',
                 this.strikes > 1 ? '|' : ' ',
                 this.strikes > 3 ? '/' : ' ',
                 currentGuess);
-        System.out.printf("  %s %s  |  Misses: %s\n",
+        System.out.printf("  %s %s  |  Misses: %s\n       |\n--------\n",
                 this.strikes > 4 ? '/' : ' ',
                 this.strikes > 5 ? '\\' : ' ',
-                '{' + this.misses.stream().collect(Collectors.joining(", ")) + '}');
-        System.out.printf("       |\n");
-        System.out.printf("--------\n");
+                '{' + String.join(", ", this.misses) + '}');
     }
 
-    public Hangman (String word) {
-        this.strikes = 0;
-        this.message = word.toUpperCase();
-        this.misses = new ArrayList<>();
-        this.output = word.replaceAll(".", "_");
-    }
-
-    public void execute (String letter) {
-        if (this.message.indexOf(letter) == -1 && !this.misses.contains(letter)) {
+    void test(String letter) {
+        if (!this.message.contains(letter) && !this.misses.contains(letter)) {
             this.misses.add(letter);
             this.strikes = this.strikes + 1;
         } else {
